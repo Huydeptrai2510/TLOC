@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TLOC Editor</title>
+<script>(function(l){var m=/\/watch\/[^/]+\/?$/.test(l.pathname);if(m)document.write('<base href="'+l.pathname.replace(/watch\/[^/]*\/?$/,'')+'">');if(m||/[?&]watch=/.test(l.search)||/\/watch\/?$/.test(l.pathname))document.documentElement.className='w'})(location)</script>
+<link rel="stylesheet" href="tloc.css">
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+</head>
+<body>
+<header id="top">
+  <input id="title" value="Untitled" aria-label="Tên dự án">
+  <span id="status">Đang tải…</span><span id="rolel"></span>
+  <button id="undo" title="Hoàn tác (Ctrl+Z)">Undo</button><button id="redo" title="Làm lại (Ctrl+Y)">Redo</button>
+  <button id="zo" aria-label="Thu nhỏ">−</button><button id="zi" aria-label="Phóng to">+</button>
+  <button id="prev" title="Chạy thử Quiz, Pop-up, hiệu ứng">Xem trước</button>
+  <button id="codeb">Xem mã</button>
+  <a id="pres" target="_blank" rel="noopener">Trình chiếu</a>
+  <button id="rmb" title="Phòng, thành viên, quyền">Phòng</button>
+  <button id="libb" title="Thư viện PNG chung">Thư viện</button>
+  <button id="vhb" title="Lịch sử phiên bản (tối đa 10)">Phiên bản</button>
+  <button id="shb" title="Công khai / Thu hồi link /watch" hidden>Chia sẻ</button>
+  <button id="exp" title="Xuất website độc lập (.zip)">Xuất website</button>
+  <button id="save">Lưu chính thức</button>
+  <button id="chkb">Kiểm thử</button>
+  <button id="tg" aria-label="Mở thuộc tính">Thuộc tính</button>
+</header>
+<nav id="left" aria-label="Thêm đối tượng">
+  <button data-add="text" title="Văn bản">Aa</button>
+  <button data-add="shape" title="Hình khối">▭</button>
+  <button data-add="image" title="Ảnh">Ảnh</button>
+  <button data-add="audio" title="Âm thanh (MP3/WAV)">♪</button>
+  <button data-add="video" title="Video (MP4/WebM)">▶</button>
+  <button data-add="model" title="Mô hình 3D (GLB/glTF/OBJ/STL)">3D</button>
+  <button data-add="chart" title="Biểu đồ (SVG)">📊</button>
+  <button data-add="quiz" title="Quiz trắc nghiệm">?</button>
+  <button data-add="info" title="Biểu tượng thông tin + pop-up">ⓘ</button>
+  <button id="grp" title="Nhóm (Ctrl+G)">Nhóm</button>
+  <button id="ugrp" title="Bỏ nhóm (Ctrl+Shift+G)">Bỏ</button>
+  <input id="img" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden>
+  <input id="mf" type="file" hidden aria-label="Tải âm thanh, video hoặc 3D">
+</nav>
+<main id="center">
+  <div id="wrap"><div id="stage"></div></div>
+  <div id="slides"></div>
+</main>
+<aside id="right">
+  <div id="insp" class="off">
+    <label>Màu nền<input id="fill" type="color"></label>
+    <label>Màu chữ<input id="fc" type="color"></label>
+    <label>Cỡ chữ (px)<input id="fs" type="number" min="8" max="400"></label>
+    <label>Bo góc (px)<input id="rd" type="number" min="0" max="999"></label>
+    <label>Độ mờ<input id="op" type="range" min="0" max="1" step="0.05"></label>
+    <label>Đổ bóng<input id="sh" type="checkbox"></label>
+    <label id="txl">Nội dung<textarea id="tx" rows="3"></textarea></label>
+  </div>
+  <div id="adv" class="off">
+    <section id="p-anim">
+      <h2>Hiệu ứng (Timeline)</h2>
+      <div class="tl"><span>Vào</span><select data-g="in" data-k="anim.in.fx" aria-label="Hiệu ứng xuất hiện"></select><input type="number" data-k="anim.in.dur" min="0.1" max="10" step="0.1" placeholder="0.8" title="Thời lượng (giây)" aria-label="Thời lượng vào"><input type="number" data-k="anim.in.delay" min="0" max="30" step="0.1" placeholder="0" title="Trễ từ đầu slide (giây)" aria-label="Trễ vào"></div>
+      <div class="tl"><span>Nhấn</span><select data-g="em" data-k="anim.em.fx" aria-label="Hiệu ứng nhấn mạnh"></select><input type="number" data-k="anim.em.dur" min="0.1" max="10" step="0.1" placeholder="0.8" title="Thời lượng (giây)" aria-label="Thời lượng nhấn"><input type="number" data-k="anim.em.delay" min="0" max="30" step="0.1" placeholder="0" title="Trễ sau pha trước (giây)" aria-label="Trễ nhấn"></div>
+      <div class="tl"><span>Ra</span><select data-g="out" data-k="anim.out.fx" aria-label="Hiệu ứng biến mất"></select><input type="number" data-k="anim.out.dur" min="0.1" max="10" step="0.1" placeholder="0.8" title="Thời lượng (giây)" aria-label="Thời lượng ra"><input type="number" data-k="anim.out.delay" min="0" max="30" step="0.1" placeholder="0" title="Trễ sau pha trước (giây)" aria-label="Trễ ra"></div>
+      <button id="ap">Xem thử (đo FPS)</button>
+    </section>
+    <section id="p-pop">
+      <h2>Pop-up khi click</h2>
+      <label><input type="checkbox" data-k="pop.on"> Bật pop-up</label>
+      <label>Tiêu đề<input data-k="pop.t"></label>
+      <label>Nội dung (**đậm**, *nghiêng*)<textarea rows="3" data-k="pop.b"></textarea></label>
+      <label>Ảnh (URL https)<input data-k="pop.i" placeholder="https://..."></label>
+      <label>Liên kết (URL)<input data-k="pop.l" placeholder="https://..."></label>
+      <label>Chữ của nút liên kết<input data-k="pop.ll"></label>
+      <label>Nút đến slide số (0 = không)<input type="number" min="0" step="1" data-k="pop.g"></label>
+    </section>
+    <section id="p-media" hidden>
+      <h2>Phương tiện</h2>
+      <label>Đường dẫn (URL)<input data-k="src" placeholder="https://..."></label>
+      <label id="l-poster">Ảnh poster / fallback (URL)<input data-k="poster" placeholder="https://..."></label>
+      <label id="l-ctl"><input type="checkbox" data-k="ctl"> Hiện nút điều khiển</label>
+      <label><input type="checkbox" data-k="auto"><span id="auto-l"></span></label>
+      <button id="live3" hidden>Xoay thử 3D</button>
+      <p id="m-warn" class="hint"></p>
+    </section>
+    <section id="p-chart" hidden>
+      <h2>Biểu đồ</h2>
+      <label>Loại<select data-k="chart.type"><option value="bar">Cột</option><option value="line">Đường</option><option value="pie">Tròn</option></select></label>
+      <label>Tiêu đề<input data-k="chart.title"></label>
+      <label>Nhãn (cách nhau dấu phẩy)<input data-k="chart.labels"></label>
+      <label>Giá trị (cách nhau dấu phẩy)<input data-k="chart.data"></label>
+    </section>
+    <section id="p-quiz" hidden>
+      <h2>Quiz (2–4 đáp án, 1 đúng)</h2>
+      <label>Câu hỏi<textarea id="qq" rows="2"></textarea></label>
+      <div class="qr"><input type="radio" name="qok" aria-label="Đáp án 1 đúng"><input class="qt" placeholder="Đáp án 1" aria-label="Đáp án 1"></div>
+      <div class="qr"><input type="radio" name="qok" aria-label="Đáp án 2 đúng"><input class="qt" placeholder="Đáp án 2" aria-label="Đáp án 2"></div>
+      <div class="qr"><input type="radio" name="qok" aria-label="Đáp án 3 đúng"><input class="qt" placeholder="Đáp án 3 (tuỳ chọn)" aria-label="Đáp án 3"></div>
+      <div class="qr"><input type="radio" name="qok" aria-label="Đáp án 4 đúng"><input class="qt" placeholder="Đáp án 4 (tuỳ chọn)" aria-label="Đáp án 4"></div>
+      <label>Lời giải thích<textarea id="qe" rows="2"></textarea></label>
+      <p class="hint">Kết quả làm bài chỉ nằm trên thiết bị người xem, không lưu CSDL.</p>
+    </section>
+  </div>
+  <section id="p-slide">
+    <h2>Chuyển cảnh slide</h2>
+    <label>Hiệu ứng<select id="trf"><option value="none">Không</option><option value="fade">Mờ dần</option><option value="slide">Trượt từ phải</option><option value="zoom">Phóng to</option></select></label>
+    <label>Thời lượng (giây)<input id="trd" type="number" min="0.1" max="5" step="0.1" value="0.6"></label>
+  </section>
+  <h2>Layer</h2>
+  <ul id="layers"></ul>
+</aside>
+<dialog id="code">
+  <h2>Mã HTML/CSS (chỉ đọc)</h2>
+  <textarea id="ch" readonly aria-label="HTML"></textarea>
+  <textarea id="cc" readonly aria-label="CSS"></textarea>
+  <button id="copy">Sao chép mã</button> <button id="close">Đóng</button>
+</dialog>
+<dialog id="pv">
+  <div class="pvh"><strong>Xem trước</strong><button id="pvc">Đóng</button></div>
+  <iframe id="pvf" title="Xem trước" sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"></iframe>
+</dialog>
+<dialog id="rm">
+  <h2>Phòng &amp; Thành viên</h2>
+  <section><h3>Tạo phòng cho dự án này</h3><button id="rmnew">Tạo phòng</button> <span id="rmmsg" class="hint" role="status"></span></section>
+  <section><h3>Xin vào phòng</h3><label>Mã phòng<input id="rmcode" maxlength="12" autocomplete="off"></label><button id="rmjoin">Xin vào</button></section>
+  <section><h3>Danh sách phòng</h3><div id="rmlist"></div></section>
+  <p><button id="rmclose">Đóng</button></p>
+</dialog>
+<dialog id="lib">
+  <h2>Thư viện PNG</h2>
+  <div class="row"><input id="lq" placeholder="Lọc theo tên, thẻ hoặc danh mục" aria-label="Lọc"></div>
+  <p class="hint">Kéo ảnh thả vào Canvas hoặc bấm để thêm.</p>
+  <div id="ladm" class="row" hidden><input id="lcat" placeholder="Danh mục" aria-label="Danh mục"><input id="ltag" placeholder="Thẻ, cách nhau dấu phẩy" aria-label="Thẻ"><input id="lfiles" type="file" accept="image/png" multiple aria-label="Chọn nhiều PNG"><button id="lup">Tải lên (batch)</button></div>
+  <div id="lgrid" class="grid"></div>
+  <p><button id="lclose">Đóng</button></p>
+</dialog>
+<dialog id="vh">
+  <h2>Lịch sử phiên bản (tối đa 10)</h2>
+  <div id="vlist"></div>
+  <p><button id="vclose">Đóng</button></p>
+</dialog>
+<dialog id="shr">
+  <h2>Chia sẻ &amp; Thu hồi link</h2>
+  <p id="shs" class="hint" role="status"></p>
+  <label>Link trình chiếu (chạy ngay) <input id="shl" readonly></label>
+  <label>Link gọn /watch/&lt;id&gt; (cần rewrite <code>/watch/*</code> → tloc.html) <input id="shl2" readonly></label>
+  <p><button id="shon">Bật chia sẻ công khai</button> <button id="shoff">Thu hồi Link Shared</button> <button id="shcopy">Sao chép link</button> <button id="shopen">Mở thử</button></p>
+  <p id="shm" class="hint" role="status"></p>
+  <p class="hint">Thu hồi chặn trang /watch ngay lập tức. Ảnh/video đã tải lên vẫn có URL công khai riêng trong kho lưu trữ.</p>
+  <p><button id="shclose">Đóng</button></p>
+</dialog>
+<dialog id="xp">
+  <h2>Xuất website độc lập (.zip)</h2>
+  <p id="xs" class="hint" role="status"></p>
+  <ul id="xl"></ul>
+  <p><button id="xdl" disabled>Tải gói .zip</button> <button id="xclose">Đóng</button></p>
+  <p class="hint">Giải nén rồi mở <code>index.html</code>: chạy không cần Supabase/TLOC. Có 3D thì mở qua máy chủ tĩnh và cần Internet.</p>
+</dialog>
+<div id="wv" hidden>
+  <iframe id="wf" title="Trình chiếu" sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox" allow="fullscreen" allowfullscreen hidden></iframe>
+  <main id="w404" hidden><h1>404 · Access Denied</h1><p>Dự án không tồn tại hoặc đã bị khóa.</p></main>
+</div>
+<dialog id="chk">
+  <h2>Kiểm thử hệ thống</h2>
+  <p class="hint">Chỉ nhập ANON KEY, không dùng service_role.</p>
+  <section><h3>Kết nối và đăng nhập NXHN</h3>
+    <label>Supabase URL <input id="url" placeholder="https://xxxx.supabase.co"></label>
+    <label>ANON KEY <input id="key" placeholder="eyJ..."></label>
+    <button id="connect">Kết nối</button>
+    <label>Email <input id="email" type="email" autocomplete="username"></label>
+    <label>Mật khẩu <input id="pw" type="password" autocomplete="current-password"></label>
+    <button id="login">Đăng nhập</button>
+    <p id="session" class="hint">Chưa đăng nhập.</p></section>
+  <section><h3>Kiểm tra 7 bảng tloc_*</h3><button id="tables">Truy vấn từng bảng</button></section>
+  <section><h3>Kiểm tra RLS</h3>
+    <label>ID dự án của người dùng khác <input id="pid" placeholder="uuid"></label>
+    <button id="rls">Thử sửa và xóa</button></section>
+  <section><h3>Kiểm tra Storage tloc-media</h3>
+    <input id="file" type="file" accept="image/png"><button id="upload">Tải PNG lên</button>
+    <img id="preview" alt="" hidden></section>
+  <section><h3>Kiểm thử Giai đoạn 3</h3>
+    <p class="hint">Tự kiểm: Quiz, Keyframes, định vị Pop-up, bảng CSDL, bucket. Thủ công: nút 3D → tải .glb 8MB → "Xoay thử 3D"; chọn tiêu đề → "Trượt vào từ phải" → "Xem thử" (hiện FPS); "Xem trước" → làm Quiz.</p>
+    <button id="t3">Chạy tự kiểm GĐ3</button></section>
+  <section><h3>Kiểm thử Giai đoạn 4</h3>
+    <p class="hint">Tự kiểm: vai trò, khóa hết hạn, RLS, giới hạn 10 phiên bản, chặn "Tạo phòng" với tài khoản thường. Thủ công: 2 trình duyệt cùng phòng, A chọn hình X thì B thấy viền đỏ.</p>
+    <button id="t4">Chạy tự kiểm GĐ4</button></section>
+  <section><h3>Kiểm thử Giai đoạn 5</h3>
+    <p class="hint">Tự kiểm: gói xuất (index.html, css/, js/), ZIP, người lạ chỉ vào qua RPC, Bật → Thu hồi link có hiệu lực ngay. Thủ công: tab ẩn danh mở link rồi F5 sau khi thu hồi; xuất ZIP, giải nén, ngắt mạng, mở index.html.</p>
+    <button id="t5">Chạy tự kiểm GĐ5</button></section>
+  <section><h3>Nhật ký</h3><ul id="log"></ul></section>
+  <p><button id="cclose">Đóng</button></p>
+</dialog>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="tloc.js"></script>
+</body>
+</html>

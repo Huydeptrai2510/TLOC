@@ -1,0 +1,113 @@
+:root{--bg:#14171c;--p:#1d2128;--ln:#2d333d;--fg:#e6e9ef;--ac:#4f8cff}
+*{box-sizing:border-box}
+body{margin:0;height:100vh;display:grid;grid:48px 1fr/64px 1fr 280px;background:var(--bg);color:var(--fg);font:14px system-ui,"Segoe UI",sans-serif}
+#top{grid-column:1/4;display:flex;gap:6px;align-items:center;padding:0 8px;background:var(--p);border-bottom:1px solid var(--ln);overflow-x:auto}
+#left{display:flex;flex-direction:column;gap:6px;padding:6px;background:var(--p);overflow:auto}
+#center{overflow:auto;display:flex;flex-direction:column;align-items:center;padding:12px;gap:8px}
+#right{background:var(--p);overflow:auto;padding:8px;border-left:1px solid var(--ln)}
+h2{font-size:14px;margin:12px 0 4px}
+button,#pres,input,textarea{font:inherit;color:var(--fg);background:#262c36;border:1px solid var(--ln);border-radius:6px;padding:6px 10px;cursor:pointer;text-decoration:none;white-space:nowrap}
+button:focus-visible,input:focus-visible,textarea:focus-visible,#pres:focus-visible{outline:2px solid var(--ac);outline-offset:1px}
+button.on,li.on{outline:2px solid var(--ac)}
+#title{cursor:text;width:160px}
+#status{opacity:.75;margin-right:auto;white-space:nowrap}
+#wrap{background:#fff;flex:none;overflow:hidden}
+#stage{position:relative;background:#fff;transform-origin:0 0;touch-action:none;user-select:none}
+#stage .tloc-el{cursor:move}
+.sel{outline:2px solid var(--ac)}
+.hd{position:absolute;width:36px;height:36px;border-radius:50%;background:var(--ac)}
+.rz{right:-18px;bottom:-18px;cursor:nwse-resize}
+.ro{left:50%;top:-64px;margin-left:-18px;cursor:grab}
+#slides{display:flex;gap:6px;flex-wrap:wrap}
+#insp{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#insp.off{opacity:.4;pointer-events:none}
+#insp label{font-size:12px}
+#insp input,#insp textarea{display:block;width:100%;padding:4px;margin-top:2px}
+#txl{grid-column:1/3}
+#layers{list-style:none;padding:0;margin:0}
+#layers li{display:flex;gap:4px;align-items:center;padding:4px;border-bottom:1px solid var(--ln)}
+#layers span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#layers button{padding:2px 6px}
+dialog{background:var(--p);color:var(--fg);border:1px solid var(--ln);width:min(900px,95vw)}
+dialog textarea{display:block;width:100%;height:32vh;margin-bottom:8px;font:12px monospace;cursor:text;white-space:pre}
+#tg{display:none}
+@media(max-width:800px){
+  body{grid:48px 1fr/52px 1fr}
+  #top{grid-column:1/3}#tg{display:inline-block}
+  #right{position:fixed;top:48px;right:0;bottom:0;width:min(300px,85vw);transform:translateX(100%);transition:transform .2s;z-index:5;border-left:1px solid var(--ln)}
+  #right.open{transform:none}
+}
+@media(prefers-reduced-motion:reduce){#right{transition:none}}
+
+/* ---- Hộp thoại Kiểm thử (GĐ1) ---- */
+#chk{width:min(640px,95vw);max-height:90vh;overflow:auto;--ok:#5fcf93;--bad:#ff8a80}
+#chk section{border:1px solid var(--ln);border-radius:8px;padding:12px;margin-top:12px}
+#chk h3{font-size:1rem;margin:0 0 8px}
+#chk label{display:block;font-size:.875rem;margin-bottom:10px}
+#chk input{display:block;width:100%;margin-top:4px}
+#chk img{max-width:100%;margin-top:8px;border-radius:6px}
+.hint{font-size:.875rem;opacity:.75;margin:4px 0;word-break:break-all}
+#log{list-style:none;margin:0;padding:0;font-size:.875rem;word-break:break-word}
+#log li{padding:6px 0;border-bottom:1px solid var(--ln)}
+.ok{color:var(--ok)}.bad{color:var(--bad)}
+
+/* ---- GĐ3: Timeline, Pop-up, Media, Quiz, Xem trước ---- */
+[hidden]{display:none!important}
+select{font:inherit;color:var(--fg);background:#262c36;border:1px solid var(--ln);border-radius:6px;padding:4px}
+select:focus-visible{outline:2px solid var(--ac);outline-offset:1px}
+#adv.off{opacity:.4;pointer-events:none}
+#adv section,#p-slide{border-top:1px solid var(--ln);margin-top:8px;padding-top:2px}
+#adv label,#p-slide label{display:block;font-size:12px;margin:6px 0}
+#adv input:not([type=checkbox]):not([type=radio]),#adv select,#adv textarea,#p-slide input,#p-slide select{display:block;width:100%;padding:4px;margin-top:2px}
+#adv button{margin-top:6px}
+.tl{display:grid;grid-template-columns:34px 1fr 50px 50px;gap:4px;align-items:center;margin:4px 0;font-size:12px}
+.tl select,.tl input{margin:0!important;padding:3px!important}
+.qr{display:grid;grid-template-columns:20px 1fr;gap:4px;align-items:center;margin:4px 0}
+#stage .ph{position:relative;display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:#2a303b;color:#cfd6e4;font:24px system-ui,sans-serif;overflow:hidden}
+#stage .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.7}
+#stage .ph b{position:relative}
+#stage .m3{pointer-events:none}
+#stage .m3.live{pointer-events:auto}
+#stage .tloc-pop::after{content:"ⓘ";position:absolute;right:6px;top:2px;font:700 26px system-ui,sans-serif;color:#4f8cff;pointer-events:none}
+#stage .tloc-quiz>:not(.hd){pointer-events:none}
+#pv{width:96vw;height:92vh;padding:8px}
+#pv[open]{display:flex;flex-direction:column;gap:8px}
+.pvh{display:flex;justify-content:space-between;align-items:center}
+#pvf{flex:1;width:100%;border:0;background:#111}
+
+/* ---- GĐ4: vai trò, khóa phần tử, phòng, thư viện, phiên bản ---- */
+:root{--lock:#ff3b30}
+#rolel{opacity:.75;white-space:nowrap;font-size:12px}
+#stage .lk{outline:3px solid var(--lock)}
+#stage .lk::before{content:attr(data-lk);position:absolute;left:0;top:-34px;padding:2px 8px;background:var(--lock);color:#fff;font:600 24px system-ui,sans-serif;white-space:nowrap;pointer-events:none}
+.ro #left,.ro #insp,.ro #adv,.ro #p-slide,.ro #layers,.ro #undo,.ro #redo{pointer-events:none;opacity:.4}
+.ro #slides [data-i="+"],.ro #slides [data-i="-"]{display:none}
+.ro #stage .tloc-el{cursor:default}
+#rm,#vh{width:min(720px,95vw);max-height:90vh;overflow:auto}
+#rm section{border:1px solid var(--ln);border-radius:8px;padding:12px;margin-top:12px}
+#rm label{display:block;font-size:.875rem;margin-bottom:8px}
+#rm input{display:block;width:100%;margin-top:4px}
+.row{display:flex;gap:6px;align-items:center;padding:6px 0;border-bottom:1px solid var(--ln)}
+.row>span{flex:1;overflow:hidden;text-overflow:ellipsis}
+.row input{flex:1;min-width:0}
+.mem{padding-left:16px}
+#lib{position:fixed;left:72px;top:56px;margin:0;width:min(420px,60vw);max-height:80vh;overflow:auto;z-index:6}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}
+.grid figure{margin:0;padding:4px;border:1px solid var(--ln);border-radius:8px;cursor:grab;font-size:11px;word-break:break-all}
+.grid img{display:block;width:100%;height:80px;object-fit:contain;background:#fff;border-radius:6px}
+.grid figcaption{margin-top:4px}
+
+/* ---- GĐ5: /watch, Chia sẻ, Xuất website ---- */
+html.w body{display:block;height:100vh;margin:0;overflow:hidden;background:#111}
+html.w body>:not(#wv):not(script){display:none!important}
+#wv{position:fixed;inset:0;background:#111;color:var(--fg)}
+#wf{display:block;width:100%;height:100%;border:0;background:#111}
+#w404{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:16px;text-align:center}
+#w404 h1{font-size:2rem;margin:0}
+#wb{position:fixed;left:8px;top:8px;margin:0;padding:4px 10px;border-radius:12px;background:rgba(0,0,0,.6);color:#fff;font:12px system-ui,sans-serif;pointer-events:none}
+#shr,#xp{width:min(640px,95vw);max-height:90vh;overflow:auto}
+#shr label{display:block;font-size:.875rem;margin-bottom:8px}
+#shr input{display:block;width:100%;margin-top:4px;cursor:text}
+#xl{list-style:none;margin:8px 0;padding:0;font-size:.875rem;word-break:break-word}
+#xl li{padding:6px 0;border-bottom:1px solid var(--ln)}
+.warn{color:#f5b82e}
