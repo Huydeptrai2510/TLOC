@@ -2,7 +2,7 @@
 (() => {
 'use strict';
 // GĐ5: ĐIỀN Supabase URL + ANON KEY (khóa công khai) để /watch chạy khi người xem chưa đăng nhập. CẤM dán service_role.
-const CFG = { url: '', key: '' };
+const CFG = { url: 'https://mgscuzkmirzrxbithllt.supabase.co', key: 'sb_publishable_C_t4FXZtsOdW4vkAYp7kzw_LiEO1MLW' };
 // TLOC Auth Wrapper — dùng lại phiên đăng nhập NXHN, KHÔNG tạo bảng user riêng.
 // Không import supabase-js: truyền createClient hoặc client có sẵn của NXHN vào (khớp mọi framework).
 
